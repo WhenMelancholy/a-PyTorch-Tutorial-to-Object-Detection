@@ -677,7 +677,7 @@ def save_checkpoint(epoch, model, optimizer):
     state = {'epoch': epoch,
              'model': model,
              'optimizer': optimizer}
-    filename = 'checkpoint_ssd300.pth.tar'
+    filename = f'./data/checkpoint/checkpoint_ssd300-{epoch}.pth.tar'
     torch.save(state, filename)
 
 
@@ -713,3 +713,9 @@ def clip_gradient(optimizer, grad_clip):
         for param in group['params']:
             if param.grad is not None:
                 param.grad.data.clamp_(-grad_clip, grad_clip)
+
+
+if __name__ == "__main__":
+    create_data_lists(r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\VOC2007",
+                      r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\VOC2012",
+                      r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\data_lists")
