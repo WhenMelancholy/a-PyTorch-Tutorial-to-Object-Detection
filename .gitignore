@@ -1,5 +1,6 @@
 # ignore the data files
 /data
+checkpoint*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
