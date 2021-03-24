@@ -666,7 +666,7 @@ def save_checkpoint(epoch, model, optimizer):
     state = {'epoch': epoch,
              'model': model,
              'optimizer': optimizer}
-    filename = 'checkpoint_ssd300.pth.tar'
+    filename = f'./data/saves/{epoch}-checkpoint_ssd300.pth.tar'
     torch.save(state, filename)
 
 
@@ -701,6 +701,7 @@ def clip_gradient(optimizer, grad_clip):
         for param in group['params']:
             if param.grad is not None:
                 param.grad.data.clamp_(-grad_clip, grad_clip)
+
 
 if __name__ == "__main__":
     # 使用 VOC 数据集训练
