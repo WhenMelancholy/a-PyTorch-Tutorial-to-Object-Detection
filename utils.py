@@ -8,16 +8,30 @@ import torchvision.transforms.functional as FT
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Label map
-voc_labels = ('aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
-              'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor')
+# COCO 数据集的 label 是 80
+voc_labels = (
+    "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light",
+    "fire hydrant",
+    "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra",
+    "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball",
+    "kite",
+    "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork",
+    "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza",
+    "donut",
+    "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote",
+    "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase",
+    "scissors",
+    "teddy bear", "hair drier", "toothbrush"
+)
 label_map = {k: v + 1 for v, k in enumerate(voc_labels)}
 label_map['background'] = 0
 rev_label_map = {v: k for k, v in label_map.items()}  # Inverse mapping
 
+# 设定 80 中标注的颜色
 # Color map for bounding boxes of detected objects from https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/
 distinct_colors = ['#e6194b', '#3cb44b', '#ffe119', '#0082c8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',
                    '#d2f53c', '#fabebe', '#008080', '#000080', '#aa6e28', '#fffac8', '#800000', '#aaffc3', '#808000',
-                   '#ffd8b1', '#e6beff', '#808080', '#FFFFFF']
+                   '#ffd8b1', '#e6beff', '#808080', '#FFFFFF'] * 4
 label_color_map = {k: distinct_colors[i] for i, k in enumerate(label_map.keys())}
 
 
@@ -57,8 +71,8 @@ def create_data_lists(voc07_path, voc12_path, output_folder):
     :param voc12_path: path to the 'VOC2012' folder
     :param output_folder: folder where the JSONs must be saved
     """
-    voc07_path = os.path.abspath(voc07_path)
-    voc12_path = os.path.abspath(voc12_path)
+    voc07_path = os.path.abspath(voc07_path) if voc07_path else None
+    voc12_path = os.path.abspath(voc12_path) if voc12_path else None
 
     train_images = list()
     train_objects = list()
@@ -66,6 +80,9 @@ def create_data_lists(voc07_path, voc12_path, output_folder):
 
     # Training data
     for path in [voc07_path, voc12_path]:
+        # 假如不打算采用全部数据集的话，就跳过
+        if not path:
+            continue
 
         # Find IDs of images in training data
         with open(os.path.join(path, 'ImageSets/Main/trainval.txt')) as f:
@@ -713,3 +730,13 @@ def clip_gradient(optimizer, grad_clip):
         for param in group['params']:
             if param.grad is not None:
                 param.grad.data.clamp_(-grad_clip, grad_clip)
+
+if __name__ == "__main__":
+    # 使用 VOC 数据集训练
+    # create_data_lists(r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\VOC2007",
+    #                   r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\VOC2012",
+    #                   r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\data_lists")
+    # 使用转换后的 COCO 数据集训练
+    create_data_lists(r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\COCO",
+                      None,
+                      r"E:\github\a-PyTorch-Tutorial-to-Object-Detection\data\data_lists")
